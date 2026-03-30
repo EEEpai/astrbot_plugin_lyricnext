@@ -200,6 +200,9 @@ class LyricNextPlugin(Star):
                                     "preprocess_lyrics"] else filtered_sentences[i]
                                 next_sentence = filtered_sentences[i + 1]
 
+                                if not current_sentence.strip():
+                                    continue
+
                                 if current_sentence not in self.lyrics_index:
                                     self.lyrics_index[current_sentence] = []
 
@@ -229,11 +232,13 @@ class LyricNextPlugin(Star):
             "]+", flags=re.UNICODE)
         processed = emoji_pattern.sub('', processed)
 
-        # 去除标点符号，保留字母、数字、中文字符和空格
+        # 去除标点符号，保留字母、数字、中文字符、日文假名和空格
         # a-zA-Z0-9: 英文字母和数字
         # \u4e00-\u9fff: 中文字符
+        # \u3040-\u30ff: 日文平假名和片假名
+        # \uff66-\uff9f: 日文半角片假名
         # \s: 空格字符
-        processed = re.sub(r'[^a-zA-Z0-9\u4e00-\u9fff\s]', '', processed)
+        processed = re.sub(r'[^a-zA-Z0-9\u4e00-\u9fff\u3040-\u30ff\uff66-\uff9f\s]', '', processed)
 
         # 去除多余空格
         processed = re.sub(r'\s+', ' ', processed).strip()
